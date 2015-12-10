@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -372,7 +371,7 @@ public class YouTubePlayEffect extends ViewGroup {
                         Math.max(1 - Math.abs(mHorizontalOffset - ORIGINAL_MIN_OFFSET) / MAX_OFFSET_RATIO,MIN_ALPHA)
                         , 1);
 //                Log.i("debug", "onViewPositionChanged: " + mHorizontalOffset + "," + (1-Math.abs(mHorizontalOffset-ORIGINAL_MIN_OFFSET)));
-                Log.i("debug", "onViewPositionChanged: alpha:"+alpha);
+//                Log.i("debug", "onViewPositionChanged: alpha:"+alpha);
                 mPlayer.setAlpha(alpha);
             }
 
