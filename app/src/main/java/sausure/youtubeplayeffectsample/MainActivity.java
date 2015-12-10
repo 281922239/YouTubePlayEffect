@@ -1,10 +1,11 @@
 package sausure.youtubeplayeffectsample;
 
+import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.Surface;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -13,11 +14,11 @@ import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity implements YouTubePlayEffect.Callback,
-        SurfaceHolder.Callback,View.OnClickListener,MediaPlayer.OnPreparedListener
+        View.OnClickListener,MediaPlayer.OnPreparedListener,TextureView.SurfaceTextureListener
 {
-    private SurfaceView mPlayer;
+    private TextureView mPlayer;
     private MediaPlayer mediaPlayer;
-    private SurfaceHolder holder;
+//    private SurfaceHolder holder;
     private YouTubePlayEffect mEffectPlayer;
     private Button testButton;
     private ListView listView;
@@ -27,10 +28,11 @@ public class MainActivity extends AppCompatActivity implements YouTubePlayEffect
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mPlayer = (SurfaceView) findViewById(R.id.player);
-        holder = mPlayer.getHolder();
-        holder.addCallback(this);
-        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        mPlayer = (TextureView) findViewById(R.id.player);
+        mPlayer.setSurfaceTextureListener(this);
+//        holder = mPlayer.getHolder();
+//        holder.addCallback(this);
+//        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mediaPlayer = MediaPlayer.create(this,R.raw.welcome_video);
         mediaPlayer.setOnPreparedListener(this);
 
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements YouTubePlayEffect
     }
 
     private void initList(){
-        listView.setAdapter(ArrayAdapter.createFromResource(this,R.array.test_list,android.R.layout.simple_list_item_1));
+        listView.setAdapter(ArrayAdapter.createFromResource(this, R.array.test_list, android.R.layout.simple_list_item_1));
     }
 
     private void playVideo(){
@@ -71,22 +73,6 @@ public class MainActivity extends AppCompatActivity implements YouTubePlayEffect
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        mediaPlayer.setDisplay(holder);
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-//        Log.i("debug","surface-changed:width="+width+",height="+height);
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        finish();
-//        Log.i("debug", "surface-destroyed");
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         if(mediaPlayer.isPlaying()){
@@ -104,5 +90,26 @@ public class MainActivity extends AppCompatActivity implements YouTubePlayEffect
     @Override
     public void onPrepared(MediaPlayer mp) {
         mediaPlayer.setLooping(true);
+    }
+
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        mediaPlayer.setSurface(new Surface(surface));
+    }
+
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        finish();
+        return true;
+    }
+
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
     }
 }

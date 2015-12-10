@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,7 @@ public class YouTubePlayEffect extends ViewGroup {
     /**
      * 播放器最低透明度，可惜SurfaceView不支持设置透明度的样子
      */
-    private static final float MIN_ALPHA = 0.1f;
+    private static final float MIN_ALPHA = 0.2f;
 
     /**
      * 播放器最终缩小的比例
@@ -50,6 +51,8 @@ public class YouTubePlayEffect extends ViewGroup {
     private static final float ORIGINAL_MIN_OFFSET = 1f / (1f + PLAYER_RATIO);
     private static final float LEFT_DRAG_DISAPPEAR_OFFSET = (4f - PLAYER_RATIO) / (4f + 4f * PLAYER_RATIO);
     private static final float RIGHT_DRAG_DISAPPEAR_OFFSET = (4f + PLAYER_RATIO) / (4f + 4f * PLAYER_RATIO);
+
+    private static final float MAX_OFFSET_RATIO = (1f - PLAYER_RATIO) / (1f + PLAYER_RATIO);
 
     /**
      * 这里我用了自己的CustomViewDragHelper类，其基本从ViewDragHelper复制过来，只是做了一些处理，换成ViewDragHelper
@@ -160,6 +163,7 @@ public class YouTubePlayEffect extends ViewGroup {
     }
 
     public void restorePosition(){
+        mPlayer.setAlpha(1f);
         this.setAlpha(0f);
         mLeft = mHorizontalRange - mPlayerMinWidth;
         mTop = mVerticalRange;
@@ -364,11 +368,12 @@ public class YouTubePlayEffect extends ViewGroup {
                 mLeft = left;
                 mHorizontalOffset = Math.abs((float)(mLeft + mPlayerMinWidth) / mHorizontalRange);
 
-            //SurfaceView设置alpha会直接消失，郁闷
-//                float alpha = Math.min(
-//                        Math.max(1 - Math.abs(mHorizontalOffset - ORIGINAL_MIN_OFFSET),MIN_ALPHA)
-//                        ,1);
-//                mPlayer.setAlpha(alpha);
+                float alpha = Math.min(
+                        Math.max(1 - Math.abs(mHorizontalOffset - ORIGINAL_MIN_OFFSET) / MAX_OFFSET_RATIO,MIN_ALPHA)
+                        , 1);
+//                Log.i("debug", "onViewPositionChanged: " + mHorizontalOffset + "," + (1-Math.abs(mHorizontalOffset-ORIGINAL_MIN_OFFSET)));
+                Log.i("debug", "onViewPositionChanged: alpha:"+alpha);
+                mPlayer.setAlpha(alpha);
             }
 
             requestLayoutLightly();
